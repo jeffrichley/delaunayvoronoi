@@ -10,6 +10,7 @@ import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
 import com.infinity.delaunayvoronoi.model.Point;
 import com.infinity.delaunayvoronoi.model.Polygon;
+import com.infinity.delaunayvoronoi.util.Tick;
 
 /**
  * Creates a <code>PanGraph</code> that represents Delaunay triangles.
@@ -62,7 +63,6 @@ public class DelaunayTriangulation implements PanGraphFactory {
 								  superTriangleNodes.get(2));
 		
 		// for each sample point in the vertex list
-		int processed = 0;
 		for (Point point : vertexList) {
 			// initialize the edge buffer
 			List<Arc> edgeBuffer = new ArrayList<>();
@@ -104,8 +104,6 @@ public class DelaunayTriangulation implements PanGraphFactory {
 				Point p3 = edge.getEndPoints().get(1).getPoint();
 				addTriangleToGraph(graph, point, p2, p3);
 			}
-			
-			processed++;
 		}
 		
 		// remove any triangles from the triangle list that use the super triangle vertices
@@ -138,6 +136,14 @@ public class DelaunayTriangulation implements PanGraphFactory {
 		Point p1 = corners.get(0).getPoint();
 		Point p2 = corners.get(1).getPoint();
 		Point p3 = corners.get(2).getPoint();
+		
+		// check if it is in the triangle's bounding box
+		double x = point.x;
+		double y = point.y;
+		if ((x < p1.x && x < p2.x && x < p3.x) || (x > p1.x && x > p2.x && x > p3.x) ||
+			(y < p1.y && y < p2.y && y < p3.y) || (y > p1.y && y > p2.y && y > p3.y)) {
+			return false;
+		}
 		
 		Point circumCenter = getCircumCenter(triangle);
 		double circumRadius = getCircumRadius(triangle);
