@@ -55,7 +55,9 @@ public class PanGraph {
 	 * @param node The <code>Node</code> to add
 	 */
 	public void addNode(Node node) {
-		nodes.add(node);
+		if (!nodes.contains(node)) {
+			nodes.add(node);
+		}
 	}
 
 	/**
@@ -63,7 +65,9 @@ public class PanGraph {
 	 * @param arc The <code>Arc</code> to add
 	 */
 	public void addArc(Arc arc) {
-		arcs.add(arc);
+		if (!arcs.contains(arc)) {
+			arcs.add(arc);
+		}
 	}
 
 	/**
@@ -79,7 +83,9 @@ public class PanGraph {
 	 * @param polygon The <code>Polygon</code> to add
 	 */
 	public void addPolygon(Polygon polygon) {
-		polygons.add(polygon);
+		if (!polygons.contains(polygon)) {
+			polygons.add(polygon);
+		}
 	}
 
 	/**

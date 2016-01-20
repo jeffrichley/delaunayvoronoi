@@ -10,7 +10,7 @@ import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
 import com.infinity.delaunayvoronoi.model.Point;
 import com.infinity.delaunayvoronoi.model.Polygon;
-import com.infinity.delaunayvoronoi.util.Tick;
+import com.infinity.delaunayvoronoi.model.Triangle;
 
 /**
  * Creates a <code>PanGraph</code> that represents Delaunay triangles.
@@ -30,16 +30,6 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * Used to speed up the finding of <code>Node</code>s that represent a given <code>Point</code>
 	 */
 	private Map<Point, Node> pointsToNodes = new HashMap<Point, Node>();
-	
-	/**
-	 * Maps <code>Polygon</code>s to their circumcenters
-	 */
-	private Map<Polygon, Point> circumCenters = new HashMap<Polygon, Point>();
-	
-	/**
-	 * Maps <code>Polygon</code>s to their circumradii
-	 */
-	private Map<Polygon, Double> circumRadii = new HashMap<Polygon, Double>();
 	
 	/* (non-Javadoc)
 	 * @see com.infinity.delaunayvoronoi.algorithm.PanGraphFactory#createPanGraph(java.util.List)
@@ -69,7 +59,8 @@ public class DelaunayTriangulation implements PanGraphFactory {
 			
 			// for each triangle currently in the triangle list
 			List<Polygon> tmpPolygons = new ArrayList<Polygon>(graph.getPolygons());
-			for (Polygon triangle : tmpPolygons) {
+			for (Polygon polygon : tmpPolygons) {
+				Triangle triangle = (Triangle) polygon;
 				// calculate the triangle circumcircle center and radius - previously calculated
 				
 				// if the point lies in the triangle circumcircle then
@@ -107,13 +98,14 @@ public class DelaunayTriangulation implements PanGraphFactory {
 		}
 		
 		// remove any triangles from the triangle list that use the super triangle vertices
-		List<Polygon> badTriangles = new ArrayList<Polygon>();
-		for (Polygon triangle : graph.getPolygons()) {
+		List<Triangle> badTriangles = new ArrayList<Triangle>();
+		for (Polygon polygon : graph.getPolygons()) {
+			Triangle triangle = (Triangle)polygon;
 			if (triangle.sharesNode(superTriangleNodes)) {
 				badTriangles.add(triangle);
 			}
 		}
-		for (Polygon badTriangle : badTriangles) {
+		for (Triangle badTriangle : badTriangles) {
 			graph.removePolygon(badTriangle);
 		}
 		
@@ -129,7 +121,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * @param triangle The <code>Polygon</code> that is the triangle
 	 * @return The radius of the triangle's circumcircle
 	 */
-	private boolean pointInCircumCircle(Point point, Polygon triangle) {
+	private boolean pointInCircumCircle(Point point, Triangle triangle) {
 		double dx, dy, rsqr, drsqr;
 
 		List<Node> corners = triangle.getCorners();
@@ -138,15 +130,17 @@ public class DelaunayTriangulation implements PanGraphFactory {
 		Point p3 = corners.get(2).getPoint();
 		
 		// check if it is in the triangle's bounding box
+		double circumRadius = triangle.getCircumCircleRadius();
+		Point circumCenter = triangle.getCircumCircleCenter();
 		double x = point.x;
 		double y = point.y;
-		if ((x < p1.x && x < p2.x && x < p3.x) || (x > p1.x && x > p2.x && x > p3.x) ||
-			(y < p1.y && y < p2.y && y < p3.y) || (y > p1.y && y > p2.y && y > p3.y)) {
+		double left = circumCenter.x - circumRadius;
+		double right = circumCenter.x + circumRadius;
+		double top = circumCenter.y - circumRadius;
+		double bottom = circumCenter.y + circumRadius;
+		if (x < left || x > right || y < top || y > bottom) {
 			return false;
 		}
-		
-		Point circumCenter = getCircumCenter(triangle);
-		double circumRadius = getCircumRadius(triangle);
 
 		/* Check for coincident points */
 		if (Math.abs(p1.y - p2.y) < EPSILON && 
@@ -168,12 +162,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * @param triangle The <code>Polygon</code> to use for calculations
 	 * @return The <code>Point</code> at the circumcenter
 	 */
-	private Point getCircumCenter(Polygon triangle) {
-		Point center = circumCenters.get(triangle);
-		if (center != null) {
-			return center;
-		}
-		
+	private Point calculateCircumCenter(Triangle triangle) {
 		List<Node> corners = triangle.getCorners();
 		Point p1 = corners.get(0).getPoint();
 		Point p2 = corners.get(1).getPoint();
@@ -207,9 +196,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 			y = m1 * (x - mx1) + my1;
 		}
 
-		center = new Point(x, y);
-		circumCenters.put(triangle, center);
-		
+		Point center = new Point(x, y);
 		return center;
 	}
 
@@ -218,22 +205,15 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * @param triangle The <code>Polygon</code> to use for calculations
 	 * @return The radius of the circumcircle
 	 */
-	private double getCircumRadius(Polygon triangle) {
-		Double radius = circumRadii.get(triangle);
-		if (radius != null) {
-			return radius;
-		}
-		
-		Point circumCenter = circumCenters.get(triangle);
+	private double calculateCircumRadius(Triangle triangle) {
+		Point circumCenter = triangle.getCircumCircleCenter();
 		Point p = triangle.getCorners().get(0).getPoint();
 		
 		double dx = p.x - circumCenter.x;
 		double dy = p.y - circumCenter.y;
 		double rsqr = dx * dx + dy * dy;
 
-		radius = Math.sqrt(rsqr);
-		circumRadii.put(triangle, radius);
-		
+		double radius = Math.sqrt(rsqr);
 		return radius;
 	}
 
@@ -245,7 +225,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * @param graph The <code>PanGraph</code> to remove the triangle from
 	 * @param triangle The <code>Polygon</code> to remove from the graph
 	 */
-	private void removeTriangleFromGraph(PanGraph graph, Polygon triangle) {
+	private void removeTriangleFromGraph(PanGraph graph, Triangle triangle) {
 		// remove the triangle from the graph
 		graph.removePolygon(triangle);
 		
@@ -346,24 +326,27 @@ public class DelaunayTriangulation implements PanGraphFactory {
 		}
 		
 		// add the polygon
-		Polygon polygon = new Polygon();
-		graph.addPolygon(polygon);
+		Triangle triangle = new Triangle();
+		graph.addPolygon(triangle);
 		
 		// make the handshake with the new polygon
 		for (Arc arc : edges) {
-			polygon.addBorder(arc);
+			triangle.addBorder(arc);
 			// before we connect the arc to polygon, 
 			// get its other bordering polygon
 			// and set it as a neighbor
 			for (Polygon p : arc.getBorderingPolygons()) {
-				polygon.addNeighboringPolygon(p);
+				triangle.addNeighboringPolygon(p);
 			}
-			arc.addBorderingPolygon(polygon);
+			arc.addBorderingPolygon(triangle);
 		}
 		for (Node node : nodes) {
-			polygon.addCorner(node);
-			node.addTouchingPolygon(polygon);
+			triangle.addCorner(node);
+			node.addTouchingPolygon(triangle);
 		}
+		
+		triangle.setCircumCircleCenter(calculateCircumCenter(triangle));
+		triangle.setCircumCircleRadius(calculateCircumRadius(triangle));
 	}
 
 	/**
