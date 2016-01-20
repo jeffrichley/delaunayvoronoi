@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.infinity.delaunayvoronoi.factory.DelaunayModelFactory;
 import com.infinity.delaunayvoronoi.model.Arc;
 import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
@@ -18,7 +19,7 @@ import com.infinity.delaunayvoronoi.model.Triangle;
  * 
  * @author jeffreyrichley
  */
-public class DelaunayTriangulation implements PanGraphFactory {
+public class DelaunayTriangulation<R extends Triangle, S extends Arc, T extends Node> implements PanGraphFactory<Triangle, Arc, Node> {
 	
 	/**
 	 * Used to represent a number very close to 0 without being 0 
@@ -30,15 +31,27 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * Used to speed up the finding of <code>Node</code>s that represent a given <code>Point</code>
 	 */
 	private Map<Point, Node> pointsToNodes = new HashMap<Point, Node>();
+
+	/**
+	 * Used to create new instances of the model objects
+	 */
+	private DelaunayModelFactory<R, S, T> modelFactory;
+	
+	/**
+	 * Sets up the algorithm's initial needs
+	 */
+	public DelaunayTriangulation() {
+		this.modelFactory = new DelaunayModelFactory<R, S, T>();
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.infinity.delaunayvoronoi.algorithm.PanGraphFactory#createPanGraph(java.util.List)
 	 */
 	@Override
-	public PanGraph createPanGraph(List<Point> points) {
+	public PanGraph<Triangle, Arc, Node> createPanGraph(List<Point> points) {
 		List<Point> vertexList = new ArrayList<Point>(points);
 		
-		PanGraph graph = new PanGraph();
+		PanGraph<Triangle, Arc, Node> graph = new PanGraph<Triangle, Arc, Node>();
 		
 		// determine the super triangle
 		List<Point> superTriangleNodes = findSuperTriangleNodes(vertexList);
@@ -225,7 +238,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * @param graph The <code>PanGraph</code> to remove the triangle from
 	 * @param triangle The <code>Polygon</code> to remove from the graph
 	 */
-	private void removeTriangleFromGraph(PanGraph graph, Triangle triangle) {
+	private void removeTriangleFromGraph(PanGraph<Triangle, Arc, Node> graph, Triangle triangle) {
 		// remove the triangle from the graph
 		graph.removePolygon(triangle);
 		
@@ -281,13 +294,13 @@ public class DelaunayTriangulation implements PanGraphFactory {
 	 * @param graph The <code>PanGraph</code> to add the information to
 	 * @param points The <code>Point</code>s to create the information from
 	 */
-	private void addTriangleToGraph(PanGraph graph, Point... points) {
+	private void addTriangleToGraph(PanGraph<Triangle, Arc, Node> graph, Point... points) {
 		// add all the nodes
 		List<Node> nodes = new ArrayList<Node>();
 		for (Point p : points) {
 			Node n = pointsToNodes.get(p);
 			if (n == null) {
-				n = new Node(p);
+				n = modelFactory.node(p);
 				pointsToNodes.put(p, n);
 				graph.addNode(n);
 			}
@@ -312,7 +325,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 				
 				// if the edge is null, we need to create it
 				if (edge == null) {
-					edge = new Arc(one, two);
+					edge = modelFactory.arc(one, two);
 					graph.addArc(edge);
 					
 					// make the handshake with the new arc
@@ -326,7 +339,7 @@ public class DelaunayTriangulation implements PanGraphFactory {
 		}
 		
 		// add the polygon
-		Triangle triangle = new Triangle();
+		Triangle triangle = modelFactory.polygon();
 		graph.addPolygon(triangle);
 		
 		// make the handshake with the new polygon
@@ -383,6 +396,14 @@ public class DelaunayTriangulation implements PanGraphFactory {
 		corners.add(new Point(maxX, minY));
 		
 		return corners;
+	}
+
+	/**
+	 * Used to inject a factory that creates custom model instances
+	 * @param modelFactory A custom factory to use for creating model instances
+	 */
+	public void setModelFactory(DelaunayModelFactory<R, S, T> modelFactory) {
+		this.modelFactory = modelFactory;
 	}
 
 }

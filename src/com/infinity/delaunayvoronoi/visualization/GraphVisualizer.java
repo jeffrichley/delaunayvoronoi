@@ -12,6 +12,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import com.infinity.delaunayvoronoi.algorithm.ClockwisePointComparator;
+import com.infinity.delaunayvoronoi.model.Arc;
 import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
 import com.infinity.delaunayvoronoi.model.Point;
@@ -21,14 +22,14 @@ import com.infinity.delaunayvoronoi.model.Polygon;
  * Visualize the <code>Polygon</code>s in a given <code>PanGraph</code>
  * @author jeffreyrichley
  */
-public class GraphVisualizer {
+public class GraphVisualizer<R extends Polygon, S extends Arc, T extends Node> {
 
 	/**
 	 * Write the visualization of the given <code>PanGraph</code> to the designated file
 	 * @param graph The <code>PanGraph</code> to visualize
 	 * @param fileName Name of the file to write the image to
 	 */
-	public void createImage(PanGraph graph, String fileName) {
+	public void createImage(PanGraph<R, S, T> graph, String fileName) {
 		int width = 0;
 		int height = 0;
 		
