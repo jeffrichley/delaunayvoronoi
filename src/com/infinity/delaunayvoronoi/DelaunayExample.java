@@ -38,10 +38,6 @@ public class DelaunayExample {
 		
 		PanGraph<Triangle, Arc, Node> graph = factory.createPanGraph(originalPoints);
 		
-		for (Triangle tri : graph.getPolygons()) {
-			System.out.println(tri);
-		}
-		
 		t.tock("Finished the graph");
 		
 		GraphVisualizer<Triangle, Arc, Node> visualizer = new GraphVisualizer<Triangle, Arc, Node>();
