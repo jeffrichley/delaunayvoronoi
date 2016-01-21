@@ -7,11 +7,13 @@ import java.util.Map;
 
 import com.infinity.delaunayvoronoi.factory.DelaunayModelFactory;
 import com.infinity.delaunayvoronoi.model.Arc;
+import com.infinity.delaunayvoronoi.model.Circle;
 import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
 import com.infinity.delaunayvoronoi.model.Point;
 import com.infinity.delaunayvoronoi.model.Polygon;
 import com.infinity.delaunayvoronoi.model.Triangle;
+import com.infinity.delaunayvoronoi.util.MathUtil;
 
 /**
  * Creates a <code>PanGraph</code> that represents Delaunay triangles.
@@ -20,12 +22,6 @@ import com.infinity.delaunayvoronoi.model.Triangle;
  * @author jeffreyrichley
  */
 public class DelaunayTriangulation<R extends Triangle, S extends Arc, T extends Node> implements PanGraphFactory<Triangle, Arc, Node> {
-	
-	/**
-	 * Used to represent a number very close to 0 without being 0 
-	 * for divide by 0 problems
-	 */
-	public static final double EPSILON = 1e-8f;
 	
 	/**
 	 * Used to speed up the finding of <code>Node</code>s that represent a given <code>Point</code>
@@ -156,8 +152,8 @@ public class DelaunayTriangulation<R extends Triangle, S extends Arc, T extends 
 		}
 
 		/* Check for coincident points */
-		if (Math.abs(p1.y - p2.y) < EPSILON && 
-			Math.abs(p2.y - p3.y) < EPSILON) {
+		if (Math.abs(p1.y - p2.y) < MathUtil.EPSILON && 
+			Math.abs(p2.y - p3.y) < MathUtil.EPSILON) {
 			return false;
 		}
 		
@@ -168,66 +164,6 @@ public class DelaunayTriangulation<R extends Triangle, S extends Arc, T extends 
 		drsqr = dx * dx + dy * dy;
 
 		return drsqr <= rsqr;
-	}
-
-	/**
-	 * Calculate the circumcenter of the given triangle
-	 * @param triangle The <code>Polygon</code> to use for calculations
-	 * @return The <code>Point</code> at the circumcenter
-	 */
-	private Point calculateCircumCenter(Triangle triangle) {
-		List<Node> corners = triangle.getCorners();
-		Point p1 = corners.get(0).getPoint();
-		Point p2 = corners.get(1).getPoint();
-		Point p3 = corners.get(2).getPoint();
-		
-		double m1, m2, mx1, mx2, my1, my2;
-		
-		double x = -1;
-		double y = -1;
-		
-		if (Math.abs(p2.y - p1.y) < EPSILON) {
-			m2 = -(p3.x - p2.x) / (p3.y - p2.y);
-			mx2 = (p2.x + p3.x) / 2.0f;
-			my2 = (p2.y + p3.y) / 2.0f;
-			x = (p2.x + p1.x) / 2.0f;
-			y = m2 * (x - mx2) + my2;
-		} else if (Math.abs(p3.y - p2.y) < EPSILON) {
-			m1 = -(p2.x - p1.x) / (p2.y - p1.y);
-			mx1 = (p1.x + p2.x) / 2.0f;
-			my1 = (p1.y + p2.y) / 2.0f;
-			x = (p3.x + p2.x) / 2.0f;
-			y = m1 * (x - mx1) + my1;
-		} else {
-			m1 = -(p2.x - p1.x) / (p2.y - p1.y);
-			m2 = -(p3.x - p2.x) / (p3.y - p2.y);
-			mx1 = (p1.x + p2.x) / 2.0f;
-			mx2 = (p2.x + p3.x) / 2.0f;
-			my1 = (p1.y + p2.y) / 2.0f;
-			my2 = (p2.y + p3.y) / 2.0f;
-			x = (m1 * mx1 - m2 * mx2 + my2 - my1) / (m1 - m2);
-			y = m1 * (x - mx1) + my1;
-		}
-
-		Point center = new Point(x, y);
-		return center;
-	}
-
-	/**
-	 * Calculate the circumradius of the given triangle
-	 * @param triangle The <code>Polygon</code> to use for calculations
-	 * @return The radius of the circumcircle
-	 */
-	private double calculateCircumRadius(Triangle triangle) {
-		Point circumCenter = triangle.getCircumCircleCenter();
-		Point p = triangle.getCorners().get(0).getPoint();
-		
-		double dx = p.x - circumCenter.x;
-		double dy = p.y - circumCenter.y;
-		double rsqr = dx * dx + dy * dy;
-
-		double radius = Math.sqrt(rsqr);
-		return radius;
 	}
 
 	/**
@@ -358,8 +294,9 @@ public class DelaunayTriangulation<R extends Triangle, S extends Arc, T extends 
 			node.addTouchingPolygon(triangle);
 		}
 		
-		triangle.setCircumCircleCenter(calculateCircumCenter(triangle));
-		triangle.setCircumCircleRadius(calculateCircumRadius(triangle));
+		Circle circumCircle = MathUtil.calculateCircumCircle(triangle);
+		triangle.setCircumCircleCenter(circumCircle.getCenter());
+		triangle.setCircumCircleRadius(circumCircle.getRadius());
 	}
 
 	/**
