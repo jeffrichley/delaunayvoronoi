@@ -100,4 +100,11 @@ public class Parabola {
 		this.leftChild = leftChild;
 	}
 	
+	/**
+	 * Tells if this node is a leaf of the binary tree
+	 */
+	public boolean isLeaf() {
+		return leftChild == null && rightChild == null;
+	}
+	
 }
