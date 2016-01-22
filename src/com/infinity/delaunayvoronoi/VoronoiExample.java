@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.infinity.delaunayvoronoi.algorithm.VoronoiGraphFactory;
 import com.infinity.delaunayvoronoi.model.Arc;
 import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;

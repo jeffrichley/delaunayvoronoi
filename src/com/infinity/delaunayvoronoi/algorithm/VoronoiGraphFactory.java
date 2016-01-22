@@ -1,14 +1,13 @@
-package com.infinity.delaunayvoronoi;
+package com.infinity.delaunayvoronoi.algorithm;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import com.infinity.delaunayvoronoi.algorithm.PanGraphFactory;
 import com.infinity.delaunayvoronoi.algorithm.voronoi.CircleEvent;
 import com.infinity.delaunayvoronoi.algorithm.voronoi.Event;
 import com.infinity.delaunayvoronoi.algorithm.voronoi.SiteEvent;
-import com.infinity.delaunayvoronoi.algorithm.voronoi.VerticalParabola;
+import com.infinity.delaunayvoronoi.algorithm.voronoi.Parabola;
 import com.infinity.delaunayvoronoi.model.Arc;
 import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
@@ -28,7 +27,7 @@ public class VoronoiGraphFactory<R extends Polygon, S extends Arc, T extends Nod
 	/**
 	 * The top of the binary tree
 	 */
-	private VerticalParabola root = null;
+	private Parabola root = null;
 
 	/* (non-Javadoc)
 	 * @see com.infinity.delaunayvoronoi.algorithm.PanGraphFactory#createPanGraph(java.util.List)
@@ -72,7 +71,6 @@ public class VoronoiGraphFactory<R extends Polygon, S extends Arc, T extends Nod
 				// remove a parabola if it is a circle event
 				CircleEvent e = (CircleEvent) event;
 				removeParabola(e.getParabola());
-		//  else : RemoveParabola( e.parabola );
 			}
 		}
 		//  done!!! 
@@ -82,12 +80,17 @@ public class VoronoiGraphFactory<R extends Polygon, S extends Arc, T extends Nod
 
 	private void addParabola(Point point) {
 		// create the parabola as an arc under point
-		VerticalParabola parabola = new VerticalParabola(point);
+		Parabola parabola = new Parabola(point);
 		
 		// check if this should be the top of the tree
 		if (root == null) {
 			root = parabola;
+			return;
 		}
+		
+		// we need to add the new parabola to the binary tree
+		
+		
 		
 //	      if (par has its circle event, when it is removed form the beachline)
 //	         remove this event form the queue
@@ -102,7 +105,7 @@ public class VoronoiGraphFactory<R extends Polygon, S extends Arc, T extends Nod
 //	      CheckCircleEvent(c);
 	}
 
-	private void removeParabola(VerticalParabola parabola) {
+	private void removeParabola(Parabola parabola) {
 		// TODO Auto-generated method stub
 		
 	}

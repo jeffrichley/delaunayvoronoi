@@ -11,14 +11,14 @@ public class CircleEvent extends Event {
 	/**
 	 * The parabola involved in the event
 	 */
-	private final VerticalParabola parabola;
+	private final Parabola parabola;
 
 	/**
 	 * Creates a new <code>CircleEvent</code>
 	 * @param location Where the event occurred
 	 * @param parabola The parabola involved in the event
 	 */
-	public CircleEvent(Point location, VerticalParabola parabola) {
+	public CircleEvent(Point location, Parabola parabola) {
 		super(location, false);
 		
 		this.parabola = parabola;
@@ -28,7 +28,7 @@ public class CircleEvent extends Event {
 	 * Get the parabola involved in the event
 	 * @return The parabola involved in the event
 	 */
-	public VerticalParabola getParabola() {
+	public Parabola getParabola() {
 		return parabola;
 	}
 	
