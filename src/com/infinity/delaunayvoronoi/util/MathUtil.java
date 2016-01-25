@@ -26,9 +26,22 @@ public class MathUtil {
 	 */
 	public static Circle calculateCircumCircle(Triangle triangle) {
 		List<Node> corners = triangle.getCorners();
+		
 		Point p1 = corners.get(0).getPoint();
 		Point p2 = corners.get(1).getPoint();
 		Point p3 = corners.get(2).getPoint();
+		
+		return calculateCircumCircle(p1, p2, p3);
+	}
+	
+	/**
+	 * Calculates the circumcircle of a given set of <code>Point</code>s
+	 * @param p1 The first <code>Point</code>
+	 * @param p2 The second <code>Point</code>
+	 * @param p3 The third <code>Point</code>
+	 * @return A <code>Circle</code> describing the circumcircle of the <code>Point</code>s
+	 */
+	public static Circle calculateCircumCircle(Point p1, Point p2, Point p3) {
 		
 		double m1, m2, mx1, mx2, my1, my2;
 		
@@ -67,6 +80,18 @@ public class MathUtil {
 		double radius = Math.sqrt(rsqr);
 		
 		return new Circle(center, radius);
+	}
+	
+	/**
+	 * Calculate the distance between two <code>Point</code>s
+	 * @param firstPoint The first <code>Point</code>
+	 * @param secondPoint The second <code>Point</code>
+	 * @return The distance between the first point and second point
+	 */
+	public static double calculateDistance(Point firstPoint, Point secondPoint) {
+		double x = firstPoint.x - secondPoint.x;
+		double y = firstPoint.y - secondPoint.y;
+		return Math.sqrt(x*x + y*y);
 	}
 	
 }

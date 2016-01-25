@@ -3,11 +3,10 @@ package com.infinity.delaunayvoronoi.algorithm.voronoi;
 import com.infinity.delaunayvoronoi.model.Point;
 
 /**
- * Represents the sweeting parabolas in the Voronoi algorithm.
- * Used a binary tree data structure
+ * Represents the sweeping <code>Parabola</code>s in the Voronoi algorithm.
  * @author Jeffrey.Richley
  */
-public class Parabola {
+public class Parabola implements BeachEntry {
 
 	/**
 	 * The top of the <code>Parabola</code>
@@ -15,20 +14,12 @@ public class Parabola {
 	private final Point site;
 	
 	/**
-	 * The parent in the binary tree
+	 * The event created from this <code>Parabola</code>
 	 */
-	private Parabola parent;
+	private CircleEvent circleEvent;
 	
-	/**
-	 * The right child in the binary tree
-	 */
-	private Parabola rightChild;
+	private Edge edge;
 	
-	/**
-	 * The left child in the binary tree
-	 */
-	private Parabola leftChild;
-
 	/**
 	 * Creates a new VerticalParabola
 	 * @param site
@@ -48,63 +39,36 @@ public class Parabola {
 
 
 	/**
-	 * Get the parent in the binary tree
-	 * @return The parent of this node
+	 * Get the <code>CircleEvent</code>
+	 * @return The <code>CircleEvent</code>
 	 */
-	public Parabola getParent() {
-		return parent;
+	public CircleEvent getCircleEvent() {
+		return circleEvent;
 	}
 
 
 	/**
-	 * Set the parent of this node
-	 * @param parent The node that is the parent of this one
+	 * The <code>CircleEvent</code> for this <code>Parabola</code>
+	 * @param circleEvent The <code>CircleEvent</code> for this <code>Parabola</code>
 	 */
-	public void setParent(Parabola parent) {
-		this.parent = parent;
+	public void setCircleEvent(CircleEvent circleEvent) {
+		this.circleEvent = circleEvent;
 	}
 
 
 	/**
-	 * Get the right child of this node
-	 * @return The right child of this node
+	 * @return the edge
 	 */
-	public Parabola getRightChild() {
-		return rightChild;
+	public Edge getEdge() {
+		return edge;
 	}
 
 
 	/**
-	 * Set the right child of this node
-	 * @param rightChild The right child of this node
+	 * @param edge the edge to set
 	 */
-	public void setRightChild(Parabola rightChild) {
-		this.rightChild = rightChild;
-	}
-
-
-	/**
-	 * Get the left child of this node
-	 * @return The left child of this node
-	 */
-	public Parabola getLeftChild() {
-		return leftChild;
-	}
-
-
-	/**
-	 * Set the left child of this node
-	 * @param leftChild The left child of this node
-	 */
-	public void setLeftChild(Parabola leftChild) {
-		this.leftChild = leftChild;
-	}
-	
-	/**
-	 * Tells if this node is a leaf of the binary tree
-	 */
-	public boolean isLeaf() {
-		return leftChild == null && rightChild == null;
+	public void setEdge(Edge edge) {
+		this.edge = edge;
 	}
 	
 }
