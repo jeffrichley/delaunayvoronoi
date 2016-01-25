@@ -16,14 +16,26 @@ public class Edge implements BeachEntry {
 	
 	private Edge neighbor;
 	
-	public Edge(Point start /* s */, Point left /* a */, Point right /* b */) {
-		this.start = start;
-		this.left = left;
-		this.right = right;
+//	public Edge(Point start /* s */, Point left /* a */, Point right /* b */) {
+	public Edge(Point s, Point a, Point b) {
+//		this.start = start;
+//		this.left = left;
+//		this.right = right;
+//		
+//		f = (right.x - left.x) / (left.y - right.y) ;
+//		g = start.y - f * start.x ;
+//		direction = new Point(right.y - left.y, -(right.x - left.x));
 		
-		f = (right.x - left.x) / (left.y - right.y) ;
-		g = start.y - f * start.x ;
-		direction = new Point(right.y - left.y, -(right.x - left.x));
+		
+		start		= s;
+		left		= a;
+		right		= b;
+		neighbor	= null;
+		end			= null;
+
+		f = (b.x - a.x) / (a.y - b.y) ;
+		g = s.y - f * s.x ;
+		direction = new Point(b.y - a.y, -(b.x - a.x));
 	}
 	
 	/**

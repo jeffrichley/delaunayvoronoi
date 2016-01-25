@@ -7,6 +7,8 @@ import com.infinity.delaunayvoronoi.model.Point;
  * @author Jeffrey.Richley
  */
 public class Parabola implements BeachEntry {
+	
+	private boolean isLeaf;
 
 	/**
 	 * The top of the <code>Parabola</code>
@@ -16,9 +18,21 @@ public class Parabola implements BeachEntry {
 	/**
 	 * The event created from this <code>Parabola</code>
 	 */
-	private CircleEvent circleEvent;
+	private Event cEvent;
 	
 	private Edge edge;
+	
+	private Parabola parent;
+	
+	private Parabola left;
+	
+	private Parabola right;
+	
+	
+	public Parabola() {
+		this.site = null;
+		this.isLeaf = false;
+	}
 	
 	/**
 	 * Creates a new VerticalParabola
@@ -26,8 +40,26 @@ public class Parabola implements BeachEntry {
 	 */
 	public Parabola(Point site) {
 		this.site = site;
+		this.isLeaf = true;
 	}
 
+	public void setLeft(Parabola p) {
+		this.left = p;
+		p.setParent(this);
+	}
+	
+	public void setRight(Parabola p) {
+		this.right = p;
+		p.setParent(this);
+	}
+	
+	public Parabola getLeft() {
+		return left;
+	}
+	
+	public Parabola getRight() {
+		return right;
+	}
 
 	/**
 	 * Get the site that originated the <code>Parabola</code>
@@ -42,8 +74,8 @@ public class Parabola implements BeachEntry {
 	 * Get the <code>CircleEvent</code>
 	 * @return The <code>CircleEvent</code>
 	 */
-	public CircleEvent getCircleEvent() {
-		return circleEvent;
+	public Event getCircleEvent() {
+		return cEvent;
 	}
 
 
@@ -51,8 +83,8 @@ public class Parabola implements BeachEntry {
 	 * The <code>CircleEvent</code> for this <code>Parabola</code>
 	 * @param circleEvent The <code>CircleEvent</code> for this <code>Parabola</code>
 	 */
-	public void setCircleEvent(CircleEvent circleEvent) {
-		this.circleEvent = circleEvent;
+	public void setCircleEvent(Event circleEvent) {
+		this.cEvent = circleEvent;
 	}
 
 
@@ -69,6 +101,24 @@ public class Parabola implements BeachEntry {
 	 */
 	public void setEdge(Edge edge) {
 		this.edge = edge;
+	}
+
+
+	public Parabola getParent() {
+		return parent;
+	}
+
+
+	public void setParent(Parabola parent) {
+		this.parent = parent;
+	}
+
+	public boolean isLeaf() {
+		return isLeaf;
+	}
+
+	public void setLeaf(boolean isLeaf) {
+		this.isLeaf = isLeaf;
 	}
 	
 }

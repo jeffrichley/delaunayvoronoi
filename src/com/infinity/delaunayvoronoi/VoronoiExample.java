@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.infinity.delaunayvoronoi.algorithm.VoronoiGraphFactory;
-import com.infinity.delaunayvoronoi.algorithm.VoronoiGraphFactoryBST;
 import com.infinity.delaunayvoronoi.model.Arc;
 import com.infinity.delaunayvoronoi.model.Node;
 import com.infinity.delaunayvoronoi.model.PanGraph;
@@ -32,7 +31,7 @@ public class VoronoiExample {
 		
 		Tick t = new Tick();
 		
-		VoronoiGraphFactory<Polygon, Arc, Node> factory = new VoronoiGraphFactory<Polygon, Arc, Node>();
+		VoronoiGraphFactory<Polygon, Arc, Node> factory = new VoronoiGraphFactory<Polygon, Arc, Node>(width, height);
 		PanGraph<Polygon, Arc, Node> graph = factory.createPanGraph(originalPoints);
 		
 		t.tock("Finished the graph");
